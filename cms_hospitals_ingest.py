@@ -86,7 +86,7 @@ def fetch_datasets():
     """
     response = requests.get(METASTORE_URL)
     response.raise_for_status()
-    return response.json().get("items", [])
+    return response.json()
 
 
 def is_hospital_dataset(dataset):
@@ -94,8 +94,14 @@ def is_hospital_dataset(dataset):
     Determine whether a dataset is related to hospitals
     based on its theme metadata.
     """
-    theme = dataset.get("theme", "")
-    return "hospital" in theme.lower()
+    theme = dataset.get("theme", [])
+
+    if isinstance(theme, list):
+        theme_text = " ".join(theme)
+    else:
+        theme_text = str(theme)
+
+    return "hospital" in theme_text.lower()
 
 
 def needs_update(dataset, metadata):
@@ -186,3 +192,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
